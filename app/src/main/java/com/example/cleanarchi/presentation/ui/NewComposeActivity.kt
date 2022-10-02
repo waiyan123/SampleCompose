@@ -1,22 +1,24 @@
 package com.example.cleanarchi.presentation.ui
 
-import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandIn
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,10 +53,26 @@ class NewComposeActivity : ComponentActivity() {
                         ListItemVO("image", "Razer", true),
                         ListItemVO("image", "Toshiba", true)
                     )
-                    ItemsList(listItems = listItems + listItems + listItems+listItems)
 
+                    MyScaffold(listItems = listItems+listItems+listItems)
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun MyScaffold(listItems: List<ListItemVO>) {
+    Scaffold(
+        bottomBar = {
+            MyButtomBar()
+        },
+        topBar = {
+            MyTopAppBar(listItems)
+        }
+    ) {
+        Box(modifier = Modifier.padding(it)) {
+            ItemsList(listItems = listItems)
         }
     }
 }
@@ -64,7 +82,10 @@ class NewComposeActivity : ComponentActivity() {
 fun ItemsList(listItems: List<ListItemVO>) {
     val grouped = listItems.groupBy { it.name.first() }
     val listState = rememberLazyListState()
-    LazyColumn(state = listState) {
+    LazyColumn(
+        state = listState,
+        verticalArrangement = Arrangement.spacedBy(5.dp)
+    ) {
         grouped.forEach { (t, u) ->
             stickyHeader {
                 StickHeader(t)
@@ -73,12 +94,11 @@ fun ItemsList(listItems: List<ListItemVO>) {
                 ListItem(it)
             }
         }
-
     }
 
     val showButton by remember {
         derivedStateOf {
-            listState.firstVisibleItemIndex>(listItems.size-14)
+            listState.firstVisibleItemIndex > (listItems.size - 14)
         }
     }
     AnimatedVisibility(visible = showButton, enter = fadeIn(), exit = fadeOut()) {
@@ -88,9 +108,13 @@ fun ItemsList(listItems: List<ListItemVO>) {
 
 @Composable
 fun ActionButton() {
-    Column(modifier = Modifier.fillMaxSize().padding(20.dp),
-    horizontalAlignment = Alignment.End,
-    verticalArrangement = Arrangement.Bottom) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(20.dp),
+        horizontalAlignment = Alignment.End,
+        verticalArrangement = Arrangement.Bottom
+    ) {
         Button(
             onClick = { /*TODO*/ }
         ) {
@@ -152,10 +176,80 @@ fun ListItem(item: ListItemVO = ListItemVO()) {
     }
 }
 
+@Composable
+fun ButtonList(list: List<ListItemVO>) {
+    LazyRow(
+        modifier = Modifier.padding(10.dp),
+        horizontalArrangement = Arrangement.spacedBy(5.dp)
+    ) {
+        items(list) { item ->
+            ListItemButton(item)
+        }
+    }
+}
+
+@Composable
+fun ListItemButton(item: ListItemVO = ListItemVO()) {
+    Button(
+        onClick = { /*TODO*/ },
+        shape = RoundedCornerShape(50),
+        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red)
+    ) {
+        Icon(
+            Icons.Default.Face,
+            contentDescription = "Description",
+            modifier = Modifier.size(ButtonDefaults.IconSize)
+        )
+        Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+        Text(
+            text = item.name,
+            style = MaterialTheme.typography.body2
+        )
+    }
+}
+
+@Composable
+fun MyTopAppBar(list: List<ListItemVO>) {
+    TopAppBar() {
+        ButtonList(list = list)
+    }
+}
+
+@Composable
+fun MyButtomBar() {
+    BottomAppBar {
+        BottomNavigation() {
+            BottomNavigationItem(icon = {
+                Icon(
+                    Icons.Default.AccountBox,
+                    "Description"
+                )
+            },
+                selected = true, onClick = { /*TODO*/ })
+            BottomNavigationItem(icon = {
+                Icon(
+                    Icons.Default.Favorite,
+                    "Description"
+                )
+            },
+                selected = false, onClick = { /*TODO*/ })
+            BottomNavigationItem(icon = {
+                Icon(
+                    Icons.Default.Build,
+                    "Description"
+                )
+            },
+                selected = true, onClick = { /*TODO*/ })
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    ListItem(ListItemVO())
-    StickHeader()
-    ActionButton()
+//    ListItem(ListItemVO())
+//    StickHeader()
+//    ActionButton()
+//    MyButtonBar()
+    ListItemButton(item = ListItemVO())
 }
