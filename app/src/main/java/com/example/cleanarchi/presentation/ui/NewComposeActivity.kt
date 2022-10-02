@@ -51,7 +51,7 @@ class NewComposeActivity : ComponentActivity() {
                         ListItemVO("image", "Razer", true),
                         ListItemVO("image", "Toshiba", true)
                     )
-                    ItemsList(listItems = listItems + listItems + listItems)
+                    ItemsList(listItems = listItems + listItems + listItems+listItems)
 
                 }
             }
@@ -73,11 +73,12 @@ fun ItemsList(listItems: List<ListItemVO>) {
                 ListItem(it)
             }
         }
+
     }
 
     val showButton by remember {
         derivedStateOf {
-            listState.firstVisibleItemScrollOffset > 0
+            listState.firstVisibleItemIndex>(listItems.size-14)
         }
     }
     AnimatedVisibility(visible = showButton, enter = fadeIn(), exit = fadeOut()) {
@@ -93,7 +94,7 @@ fun ActionButton() {
         Button(
             onClick = { /*TODO*/ }
         ) {
-            Text(text = "Action")
+            Text(text = "Scroll up")
         }
     }
 }
